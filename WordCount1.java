@@ -10,7 +10,7 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
         
-public class WordCount {
+public class WordCount1 {
         
  public static class Map extends Mapper<LongWritable, Text, Text, IntWritable> {
     private final static IntWritable one = new IntWritable(1);
@@ -19,11 +19,16 @@ public class WordCount {
     public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
         String line = value.toString();
         StringTokenizer tokenizer = new StringTokenizer(line);
+	int length=line.length();
+	
         while (tokenizer.hasMoreTokens()) {
-            word.set(tokenizer.nextToken());
-            context.write(word, one);
+	String nextWord=tokenizer.nextToken();  
+             if (nextWord.length() == 5) {                      //determine if the length of word is 5
+                word.set(nextWord);
+                context.write(word, one);
+            }
         }
-    }
+     }
  } 
         
  public static class Reduce extends Reducer<Text, IntWritable, Text, IntWritable> {
@@ -41,7 +46,7 @@ public class WordCount {
  public static void main(String[] args) throws Exception {
     Configuration conf = new Configuration();
         
-        Job job = new Job(conf, "wordcount");
+        Job job = new Job(conf, "wordcount1");
     
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(IntWritable.class);
@@ -53,7 +58,7 @@ public class WordCount {
     job.setOutputFormatClass(TextOutputFormat.class);
 
     job.setNumReduceTasks(1);
-    job.setJarByClass(WordCount.class);
+    job.setJarByClass(WordCount1.class);
         
     FileInputFormat.addInputPath(job, new Path(args[0]));
     FileOutputFormat.setOutputPath(job, new Path(args[1]));
