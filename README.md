@@ -1,6 +1,6 @@
 hadoop
 ======
-Exercise 0 output: part-r-00000
+
 
 Exercise 1 source code: WordCount1
 
