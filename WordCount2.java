@@ -10,7 +10,7 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
         
-public class WordCount {
+public class WordCount2 {
         
  public static class Map extends Mapper<LongWritable, Text, Text, IntWritable> {
     private final static IntWritable one = new IntWritable(1);
@@ -19,11 +19,26 @@ public class WordCount {
     public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
         String line = value.toString();
         StringTokenizer tokenizer = new StringTokenizer(line);
+	int length=line.length();
+	
         while (tokenizer.hasMoreTokens()) {
-            word.set(tokenizer.nextToken());
-            context.write(word, one);
+
+	String nextWord=tokenizer.nextToken();                  //the word read
+             
+	nextWord=(nextWord.subSequence(0,1)).toString();        //pick the initial character
+	char ss=nextWord.charAt(0);
+	
+        if((ss<='Z'&&ss>='A')||(ss<='z'&&ss>='a')){             //determine if the initial charecter is a letter
+
+				if(ss<='z'&&ss>='a'){           //if the initial letter is lowwer case then change it
+				nextWord=nextWord.toUpperCase();}
+
+
+                word.set(nextWord);
+                context.write(word, one);}
+            
         }
-    }
+     }
  } 
         
  public static class Reduce extends Reducer<Text, IntWritable, Text, IntWritable> {
@@ -41,7 +56,7 @@ public class WordCount {
  public static void main(String[] args) throws Exception {
     Configuration conf = new Configuration();
         
-        Job job = new Job(conf, "wordcount");
+        Job job = new Job(conf, "wordcount2");
     
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(IntWritable.class);
@@ -53,7 +68,7 @@ public class WordCount {
     job.setOutputFormatClass(TextOutputFormat.class);
 
     job.setNumReduceTasks(1);
-    job.setJarByClass(WordCount.class);
+    job.setJarByClass(WordCount2.class);
         
     FileInputFormat.addInputPath(job, new Path(args[0]));
     FileOutputFormat.setOutputPath(job, new Path(args[1]));
